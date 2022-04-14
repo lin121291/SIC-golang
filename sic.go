@@ -56,3 +56,7 @@ func check_OPTAB(tmp string) bool {
 	}
 	return false
 }
+
+func take_opcode(n string) int {
+	return OPTAB[n]
+}

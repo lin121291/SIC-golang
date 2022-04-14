@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
+//讀進檔案
 func load_file(f *[]string) {
 
 	//這邊要加東西
@@ -25,6 +27,7 @@ func load_file(f *[]string) {
 	}
 }
 
+//把每一行組語切割確認語法正確
 func ExamineLine(line string, c *[3]string) {
 
 	command := strings.Fields(strings.TrimSpace(line)) //切割line
@@ -61,6 +64,7 @@ func ExamineLine(line string, c *[3]string) {
 	}
 }
 
+//確認DIRECTIVE OPCODE存在
 func checkOpDir(n string) bool {
 	if check_DIRECTIVE(n) == true {
 		return true
@@ -69,4 +73,42 @@ func checkOpDir(n string) bool {
 		return true
 	}
 	return false
+}
+
+func check_symtab(c2 string, sym map[string]int) bool {
+	for i := range sym {
+		if c2 == i {
+			return true
+		}
+	}
+	return false
+}
+
+//把指令轉正確
+func generateInstruction(c1 string, c2 string, sym map[string]int) string {
+	ins := take_opcode(c1) * 65535
+	if len(c2) != 0 {
+		//
+		if check_symtab(c2, sym) == true {
+			ins += int(sym[c2])
+		} else {
+			return ""
+		}
+	}
+	return hexstr(strconv.FormatInt(int64(ins), 16)) //10進位轉16進位
+}
+
+func processBYTEC(n string) string {
+	constant := ""
+	for i := 2; i <= len(n)-1; i++ {
+		t, _ := strconv.ParseInt(n, 16, 16)
+		tmp := strconv.Itoa(int(t))
+
+		if len(strconv.FormatInt(t, 16)) == 1 {
+			tmp = "0" + tmp
+		}
+		tmp = strings.ToUpper(tmp)
+		constant += tmp
+	}
+	return constant
 }

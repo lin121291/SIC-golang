@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -11,8 +12,12 @@ import (
 //讀進檔案
 func load_file(f *[]string) {
 
-	//這邊要加東西
-	file, err := os.Open("example.asm")
+	var x string
+	print("enter your .asm file \n")
+	print(">>> ")
+	fmt.Scanln(&x)
+	file, err := os.Open(x)
+
 	//handle errors while opening
 	if err != nil {
 		log.Fatalf("Error when opening file: %s", err)
@@ -75,6 +80,7 @@ func checkOpDir(n string) bool {
 	return false
 }
 
+//確認symtab
 func check_symtab(c2 string, sym map[string]int) bool {
 	for i := range sym {
 		if c2 == i {
@@ -84,20 +90,23 @@ func check_symtab(c2 string, sym map[string]int) bool {
 	return false
 }
 
-//把指令轉正確
+//指令格式化
 func generateInstruction(c1 string, c2 string, sym map[string]int) string {
-	ins := take_opcode(c1) * 65535
-	if len(c2) != 0 {
-		//
+	ins := take_opcode(c1) * 65536
+
+	if c2 != " " {
+
 		if check_symtab(c2, sym) == true {
 			ins += int(sym[c2])
 		} else {
 			return ""
 		}
 	}
+
 	return hexstr(strconv.FormatInt(int64(ins), 16)) //10進位轉16進位
 }
 
+//BYTE處理
 func processBYTEC(n string) string {
 	constant := ""
 	for i := 2; i <= len(n)-1; i++ {

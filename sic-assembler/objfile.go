@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -16,9 +17,16 @@ func hexstr(n string) string {
 	return n
 }
 
-func writeHeader(s string, l string, p string) {
+//寫入H行
+func writeHeader(s string, l string, p string) string {
+
+	var name string
+	print("enter your .obj file name \n")
+	print(">>> ")
+	fmt.Scanln(&name)
+
 	//使用指定的標誌(O_RDONLY 等)打開命名文件。如果文件不存在，並且傳遞了 O_CREATE 標誌
-	f, err := os.OpenFile("example.obj", os.O_RDWR|os.O_CREATE, 0755)
+	f, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,10 +36,13 @@ func writeHeader(s string, l string, p string) {
 	f.WriteString(tmp)
 	f.WriteString("\n")
 	f.Close()
+
+	return name
 }
 
-func WriteEnd(n string) {
-	f, err := os.OpenFile("example.obj", os.O_WRONLY|os.O_APPEND, 0755)
+//寫入E行
+func WriteEnd(file string, n string) {
+	f, err := os.OpenFile(file, os.O_WRONLY|os.O_APPEND, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,8 +53,9 @@ func WriteEnd(n string) {
 	f.Close()
 }
 
-func writeText(s int, tline string) {
-	f, err := os.OpenFile("example.obj", os.O_WRONLY|os.O_APPEND, 0755)
+//寫入T行
+func writeText(file string, s int, tline string) {
+	f, err := os.OpenFile(file, os.O_WRONLY|os.O_APPEND, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,14 +64,14 @@ func writeText(s int, tline string) {
 	l := strconv.FormatInt(int64(int(len(tline)/2)), 16)
 
 	n := 2 - len(l)
-	for i := 0; i <= n; i++ {
+	for i := 0; i < n; i++ {
 		l = "0" + l
 	}
 
-	l = strings.ToUpper(l)
 	textrecord += l
-	textrecord += tline
+	textrecord += strings.ToUpper(tline)
 	textrecord += "\n"
+	textrecord = strings.ToUpper(textrecord)
 	f.WriteString(textrecord)
 	f.WriteString("\n")
 	f.Close()
